@@ -14,6 +14,28 @@ export type Price =
 	| { amount: string; asset: string; extra?: Record<string, unknown> };
 
 /**
+ * A discoverable x402-protected resource.
+ * Declared in config so the OpenAPI spec can be generated at build time
+ * without needing to visit every page first.
+ */
+export interface X402Resource {
+	/** URL path, e.g. "/premium-article" or "/api/data" */
+	path: string;
+	/** HTTP method (defaults to "GET") */
+	method?: "GET" | "POST" | "PUT" | "DELETE";
+	/** Price for this resource (falls back to defaultPrice) */
+	price?: Price;
+	/** Human-readable description of the resource */
+	description?: string;
+	/** OpenAPI operation summary (short, one-line) */
+	summary?: string;
+	/** Response MIME type hint (e.g. "text/html", "application/json") */
+	mimeType?: string;
+	/** JSON Schema for the request body (used in OpenAPI requestBody) */
+	inputSchema?: Record<string, unknown>;
+}
+
+/**
  * Configuration for the x402 Astro integration.
  *
  * @example
@@ -27,6 +49,9 @@ export type Price =
  *       network: "eip155:8453",
  *       defaultPrice: "$0.01",
  *       botOnly: true,
+ *       resources: [
+ *         { path: "/premium", price: "$0.05", description: "Premium content" },
+ *       ],
  *     }),
  *   ],
  * });
@@ -63,6 +88,20 @@ export interface X402Config {
 	 * Score range: 1 (almost certainly bot) to 99 (almost certainly human).
 	 */
 	botScoreThreshold?: number;
+	/**
+	 * Declare x402-protected resources for OpenAPI discovery.
+	 * When provided, the integration injects a `/openapi.json` route
+	 * that advertises these resources with x-payment-info metadata.
+	 *
+	 * If omitted, no discovery endpoint is injected.
+	 */
+	resources?: X402Resource[];
+	/**
+	 * High-level guidance for agents discovering this API.
+	 * Placed in OpenAPI `info["x-guidance"]`. Explain how to use
+	 * the API at a high level — what it does, pricing model, etc.
+	 */
+	guidance?: string;
 }
 
 /**

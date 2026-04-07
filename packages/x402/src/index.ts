@@ -48,7 +48,7 @@ export function x402(config: X402Config): AstroIntegration {
 	return {
 		name: "@emdash-cms/x402",
 		hooks: {
-			"astro:config:setup": ({ addMiddleware, updateConfig }) => {
+			"astro:config:setup": ({ addMiddleware, updateConfig, injectRoute }) => {
 				// Inject the virtual module that provides config to the middleware.
 				// The middleware must be excluded from Vite's SSR dependency optimizer
 				// because esbuild cannot resolve virtual modules — only Vite plugins can.
@@ -83,6 +83,14 @@ export function x402(config: X402Config): AstroIntegration {
 					entrypoint: "@emdash-cms/x402/middleware",
 					order: "pre",
 				});
+
+				// Inject OpenAPI discovery route when resources are declared
+				if (config.resources?.length) {
+					injectRoute({
+						pattern: "/openapi.json",
+						entrypoint: "@emdash-cms/x402/routes/openapi",
+					});
+				}
 			},
 		},
 	};
@@ -96,4 +104,5 @@ export type {
 	Price,
 	X402Config,
 	X402Enforcer,
+	X402Resource,
 } from "./types.js";

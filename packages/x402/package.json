@@ -24,6 +24,10 @@
 			"types": "./dist/middleware.d.mts",
 			"default": "./dist/middleware.mjs"
 		},
+		"./routes/openapi": {
+			"types": "./dist/routes/openapi.d.mts",
+			"default": "./dist/routes/openapi.mjs"
+		},
 		"./locals": {
 			"types": "./locals.d.ts"
 		}
