@@ -31,7 +31,7 @@ export function generateOpenApiDocument(config: X402Config): OpenApiDocument {
 
 		const operation: Record<string, unknown> = {
 			summary: resource.summary ?? resource.description ?? path,
-			description: resource.description,
+			...(resource.description ? { description: resource.description } : {}),
 			security: [{ x402: [] }],
 			"x-payment-info": buildPaymentInfo(price, config),
 			responses: {
